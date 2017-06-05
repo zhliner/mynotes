@@ -1,0 +1,570 @@
+2.1 命令
+========
+语言关键字，预定义常量、类型和内置函数
+
+
+3.1 整数
+========
+运算符说明（算术、逻辑、比较）
+
+
+4.3 Map
+=======
+bufio包分词：
+    input := bufio.NewScanner(os.Stdin)
+    input.Split(bufio.ScanWords)
+
+
+4.4 结构体
+==========
+1.
+因为结构体的可比较性，设计良好的结构体用于map的键会很友好。
+（注意：浮点数用于==比较并不安全）
+例：
+    type address struct {
+        hostname string
+        port     int
+    }
+    hits := make(map[address]int)
+    hits[address{"golang.org", 443}]++
+
+2.
+小写的结构体成员/字段用于包内使用。
+
+3.
+Go用结构体的“组合”逻辑实现了类似继承的概念，并且这里“数据”的概念也更加明晰。
+
+嵌入的类型为匿名成员，但它其实也是有名称的——就是类型名本身。可以通过这个名称正常访问。
+同时，小写的类型名截断了外部访问（相同的导出规则），就像私有继承一样。
+
+
+5.4 错误
+========
+1.
+错误不是异常，它是函数正常的返回结果之一。
+错误应当和空值一样被惯常的考虑处理。
+
+2
+错误处理的5个策略：
+    1. 直接返回。可能前附必要的信息
+    2. 重新尝试。应当限于一个合适的时间段内
+    3. 终止或抛出恐慌（panic）。——错误导致了内部不一致性
+    4. 简单记录（可能为log）。一般为网络方式中的非紧密关系
+    5. 直接忽略。无关程序正常功能，如删除操作系统临时文件可能产生的失败
+
+
+5.6 匿名函数
+============
+1.
+词法作用域的一个陷阱：捕获循环局部变量
+例：
+    var rmdirs []func()
+
+    for _, dir := range tempDirs() {
+        // 必要！创建一个新变量
+        // 否则循环初始的dir为原地更新
+        dir := dir
+
+        os.MkdirAll(dir, 0755)
+        rmdirs = append(rmdirs, func() {
+            // 捕获新dir变量的地址
+            os.RemoveAll(dir)
+        })
+    }
+    //...使用 rmdirs 成员
+
+2.
+网页链接提取的“广度优先”算法
+例：
+    func breadthFirst(f func(item string) []string, worklist []string) {
+        seen := make(map[string]bool)
+        for len(worklist) > 0 {
+            items := worklist
+            worklist = nil
+            for _, item := range items {
+                if !seen[item] {
+                    seen[item] = true
+                    worklist = append(worklist, f(item)...)
+                }
+            }
+        }
+    }
+
+3.
+获取A元素href属性链接的绝对路径（含http://）
+例：
+    resp, err := http.Get(url)
+    //...
+    link, err := resp.Request.URL.Parse(hrefVal)
+
+
+6.3 通过嵌入结构体来扩展类型
+============================
+附：
+针对S结构的匿名成员T，S或*S的方法集包含T接收器提升的方法，且*S的方法集还包含*T接收器提升的方法。
+同时，如果S的实例是一个变量s，则s也可以访问*T接收器的方法，但这仅仅是一个语法糖（编译器自动取地址求值：(&s).Method）
+这在一个临时实例或类型针对接口的实现里体现了出来。
+
+
+6.4 方法值和方法表达式
+======================
+1.
+distanceFromP := p.Distance
+distanceFromP(...)
+// 方法值。
+// 左侧变量绑定了p实例。
+// 可用于相同函数签名的任意场合。（函数签名与p类型无关）
+
+2.
+distance := Point.Distance
+distance(x, ...)
+// 方法表达式。
+// 方法转换为普通函数，左侧变量调用时首个参数为Point实例。
+// 可用于相同函数签名的任意场合。
+scale := (*Point).ScaleBy
+scale(&x, ...)
+
+
+7.3 实现接口的条件
+==================
+接口：
+分组不同具体类型的共同特点，定义新的接口类，并以此接口类设计新的功能集，筛选/限制可用的具体类型……
+这里，接口机制似乎成了一个“新功能扩展、规划的管理者”
+注：
+具体类型的方法集一般遵循“自我完整”的规则编写，因此大多已经完成。
+这里的接口可以滞后于类型实现，接口是灵活的，因新的功能函数而创生。
+
+
+7.5 接口值
+==========
+两个接口值可以相等比较：只要接口变量的动态类型可比较，且类型相同和值相同。即为相等
+一个类型值也可以和一个接口值比较：只要该类型与接口值里的类型可比较且相同，同时两个类型值也相等。即为相等。
+例：
+    type Inter interface {
+            Put() string
+    }
+
+    type Int int
+
+    func (i Int) Put() string {
+            return fmt.Sprintf("Hai, %d", i)
+    }
+
+    type Int2 int
+
+    func (i Int2) Put() string {
+            return fmt.Sprintf("Int2, %d", i)
+    }
+
+    func main() {
+            var i Inter = Int(55)
+            var a Int = 55
+            fmt.Println( i == a )  // true
+            var b Int2 = 55
+            fmt.Println( i == b )  // false
+    }
+
+
+
+7.6 sort.Interface接口
+======================
+sort.Reverse内部实现
+结构也可以嵌入匿名的接口，使得匿名接口存储的实例的目标方法集（接口限定的）被添加进来。
+同时，该结构本身可以重写匿名接口的方法，获得共享其余方法的效果
+例：
+    type Interface interface {
+    	Len() int
+    	Less(i, j int) bool
+    	Swap(i, j int)
+    }
+    type reverse struct {
+        // 结构嵌入匿名方法
+    	Interface
+    }
+
+    // 覆写Interface对应实例的Less方法。
+    func (r reverse) Less(i, j int) bool {
+    	return r.Interface.Less(j, i)
+    }
+    
+    // 实例data封装
+    func Reverse(data Interface) Interface {
+    	return &reverse{data}
+    }
+
+另一种重用方式：（结构体封装）
+例：
+    type customSort struct {
+        t    []*Track
+        // 外部传入比较函数
+        less func(x, y *Track) bool
+    }
+    func (x customSort) Len() int           { return len(x.t) }
+    func (x customSort) Less(i, j int) bool { return x.less(x.t[i], x.t[j]) }
+    func (x customSort) Swap(i, j int)      { x.t[i], x.t[j] = x.t[j], x.t[i] }
+
+
+7.13 类型分支（switch）
+=======================
+分支罗列多个类型名、为nil、default时，变量a为原接口值，
+否则为目标类型值。
+例：
+    // 假设 x 为 interface{}
+    switch a := x.(type) {
+    case nil:  // type of a is type of x (interface{})
+        return "NULL"
+    case int, uint: // type of a is interface{}
+        return fmt.Sprintf("%d", a)
+    case bool:  // type bool
+        if x {
+            return "TRUE"
+        }
+        return "FALSE"
+    case string:  // type string
+        return sqlQuoteString(x)
+    default:  // type interface{}
+        panic(fmt.Sprintf("unexpected type %T: %v", x, x))
+    }
+
+
+8.5 并发的循环
+==============
+sync.WaitGroup
+用于等待并发Go程的全部结束（不确定具体会并发多少）。
+例：
+    ch := make(chan int)    // Go程数据传递通道
+    var wg sync.WaitGroup   // 系统等待器
+    for ... {
+        // 循环中先计数加1
+        wg.Add(1)
+
+        // 然后创建并发
+        go func(x string) {
+            defer wg.Done()  // Go程中计数释放，同 wg.Add(-1)
+            //...
+            ch <- val
+        }(x)
+    }
+
+    // 结束通知专用Go程
+    go func() {
+        wg.Wait()
+        close(ch)  // 等待结束，关闭ch
+    }()
+
+    // Go程传递值处理
+    for v := range ch {
+        //...
+    }
+
+
+8.6 并发的Web爬虫
+=================
+1.
+并发Go程实际操作数限制：buffered channel （带缓存通道：信号量）
+预防太多实际操作无节制消耗系统资源。
+例：
+    // 信号量用一个空结构即可
+    // 同时允许20个“实际操作”
+    var tokens = make(chan struct{}, 20)
+
+    func crawl(url string) []string {
+        fmt.Println(url)
+
+        // token 占位
+        tokens <- struct{}{}
+        // 实际操作
+        list, err := links.Extract(url)
+        // token 释放
+        <-tokens
+
+        if err != nil {
+            log.Print(err)
+        }
+        return list
+    }
+
+2.
+避免多个Go程读写通道死锁
+例：
+    for i := 0; i < 20; i++ {
+        go func() {
+            for link := range unseenLinks {
+                foundLinks := crawl(link)
+
+                // worklist <- foundLinks()
+                // 可能导致死锁。单开一Go程避免
+                go func() { worklist <- foundLinks }()
+            }
+        }()
+    }
+
+    for list := range worklist {
+        for _, link := range list {
+            // 与前面Go程内对 unseenLinks 的读取相互牵制
+            unseenLinks <- link
+        }
+    }
+
+
+8.8 示例：并发的目录遍历
+========================
+有节制的目标文件大小统计（类似Unix/Linux下du）。
+性能良好。
+在关键的位置（数据供给环节）插入信号量限制：
+    var sema = make(chan struct{}, 20)
+
+    func dirents(dir string) []os.FileInfo {
+        sema <- struct{}{}        // acquire token
+        defer func() { <-sema }() // release token
+        //...获取目录内容
+    }
+
+
+9.1 竞争条件
+============
+1.
+注意：
+包级别函数（库）需要考虑“并发安全”的问题！
+系统级程序的世界，不再是顺序逻辑（如JS）。
+
+2.
+尽量避免包内变量的赋值，固定的值应当在包初始化（init）阶段构造。
+
+3.
+每一个变量都存在并发访问的安全问题，因此用channel来传递数据实现“使用通信来共享数据”，而不是“使用共享数据来通信”。
+成为Go的口头禅。
+理解：
+channel传递数据实际上是一种“专属接触”机制，私有化当前。有点像顺序程序中通过参数传递数据（而不是全局变量）的函数。
+数据在channel中传递就是一种“顺序”控制，而它们应用于并发的Go程。
+
+4.
+避免并发“数据竞争”的三种方法：
+1. 共享变量避免“写”，只读的变量拥有天然的并发安全；
+2. 通过channel传递数据。
+   > 采用监控者Go程与各个用户Go程交互，变量本地化；
+   > 通过channel流水线式传递，获得严格的顺序逻辑（串行化）；
+   > 在channel中传递channel，可构成回馈专用通道或代表自身的代理人（8.10聊天服务）；
+3. 互斥锁。
+
+
+9.2 sync.Mutex互斥锁
+====================
+1.
+从原理上看，互斥锁实际上是channel缓存为1的一个变体。
+代码：
+    var (
+        sema    = make(chan struct{}, 1)  // 信号量（1|0）
+        balance int
+    )
+    func Deposit(amount int) {
+        sema <- struct{}{}  // 获取token（填充阻塞）
+        balance = balance + amount
+        <-sema // 释放token（清空待用）
+    }
+
+    var (
+        mu      sync.Mutex  // 保护者
+        balance int         // 应当与保护者紧挨着声明
+    )
+    func Deposit(amount int) {
+        mu.Lock()
+        balance = balance + amount
+        mu.Unlock()
+    }
+
+2.
+Golang的互斥锁是不支持“重入”的，因此锁应当在导出的函数中使用，而可能同名的小写函数直接操作变量（假设锁保护已由外部实施）
+代码：
+    func Withdraw(amount int) bool {
+        mu.Lock()
+        defer mu.Unlock()
+        deposit(...)
+        //...
+    }
+    func Deposit(amount int) {
+        mu.Lock()
+        defer mu.Unlock()
+        deposit(amount)
+    }
+    // 由外部锁定保证
+    func deposit(amount int) { balance += amount }
+
+3.
+包&结构内小写成员数据的隐藏特性（封装），也可以辅助我们实现并发的不变性。
+
+
+9.4 内存同步
+============
+所有并发的问题都可以简单规避：
+1. 可能的话，将变量限定在goroutine内部；
+2. 如果多个goroutine都需要访问一个变量，使用互斥锁；
+
+
+9.7 竞争条件检测
+================
+-race
+生成修改版程序，包含对出现数据竞争时必要的的记录。
+支持 build|run|test 指令
+例：
+    go test -race ...
+使用
+> 有时间和内存上的性能损失，一般用于测试环节或试生产环境。
+> 如果必要也可酌情用于生产环境以收集运行时数据反馈。
+
+
+10.3 包声明
+===========
+1.
+以“_”或“.”开头的源文件会被构建工具忽略。
+
+2.
+同一目录内，除普通包外，可包含“_test”结尾的测试包，由test命令独立编译。
+
+3.
+导入路径中的末段可包含版本信息（如 gopkg.in/yaml.v2），但这并不影响包原来的命名（仍为yaml）。
+注：
+包的默认名称不是路径的末段名，而是源文件中package声明的名称。
+
+
+10.5 包的匿名导入
+=================
+匿名导入支持“驱动注册”类的逻辑结构。
+即：上层定义统一的操作接口（便于用户使用），下层各个类别注册具体的实施。
+如：
+- 图片/不同的图片格式。     image/jpeg|png|gif...
+- 压缩/不同的压缩算法。     archive/tar|zip...
+- SQL/不同的数据库驱动。    database/sql, .../mysql|postgres|sqlite3（通过sql包接口注册）
+
+注记：有点像是“包”层次的“接口”能力。
+
+
+10.7 工具
+=========
+1.
+特殊路径名：internal
+局部内部包机制，该目录内的包仅可以被其兄弟目录或父目录本身的包导入。
+例：
+    net/http/internal/chunked
+    可以被 net/http/httputil 包或 net/http 导入，
+    但不能被 net/url 包导入。
+
+2.
+go list
+包查询命令。其中“...”为通用适配符（类似正则式中的“*”）
+    go list ...html...  // 的用法类似于搜索，列出标准库和工作库里相关html的包
+注：
+包路径从库的根目录（src）开始计算（go list github.com/...）。
+
+包元信息：
+    go list -json html  // 用JSON格式列出html包的元信息，支持...多个目标包匹配
+    go list -f "..." xx // f参数后跟模板字符串，可实现复杂的包信息定制输出
+
+
+11.2 测试函数
+=============
+1.
+func TestName(t *testing.T) {...} 格式函数。
+调用 t.Error 或 t.Errorf 打印信息并表示测试失败。
+
+2.
+go test -v
+v参数可以显示每一个测试函数的名称和运行时间（无论成功还是失败）。
+
+3.
+随机测试（目标函数）。
+A. 从目标函数结果入手。编写另一个简单但可能性能较低的同功能函数，用相同（但随机）的输入比较两个调用的结果；
+B. 从目标函数参数入手。编写一个可构造随机合法参数的函数，用于目标函数的输入进行测试；
+
+4.
+外部测试包（*_test）
+对于可能导致循环依赖的包，采用命名为一个新包回避。
+例：
+    package fmt_test
+
+白盒测试
+可用一个专门的export_test.go文件导出fmt包内未导出的成员。
+如：
+    package fmt  // 依然属于fmt包
+
+    // 大写导出
+    // 使得外部包（fmt_test）中的测试代码可间接使用之
+    var IsSpace = isSpace
+
+
+11.3 测试覆盖率
+===============
+首先通过测试
+1.
+go test -coverprofile=x.out ...     // 生成覆盖率数据文件
+go tool cover -html=x.out           // 从数据文件生成HTML报告页面
+
+2.
+go test -cover ...      // 直接输出一个摘要
+
+
+11.4 基准测试
+=============
+也即性能测试。
+go test -bench=xx ...               // bench参数后跟正则式（xx，支持“.”指任意名），匹配测试函数
+go test -bench=xx -benchmem ...     // benchmem选项增加内存情况报告
+
+
+11.5 剖析
+=========
+go test -cpuprofile=cpu.out         // 分析CPU占用
+go test -blockprofile=block.out     // 分析Go程的阻塞（系统调用、管道读写、锁获取等）
+go test -memprofile=mem.out         // 分析内存的消耗
+生成报告
+go tool pprof ...
+例：
+    // 需要同时附带执行程序（默认xx.test）
+    // -text 文本格式
+    // -web  函数有向图（需GraphViz）
+    go tool pprof -text -nodecount=10 ./http.test cpu.out
+
+
+11.6 示例函数
+=============
+三个用处：
+1. 文档关联
+    ExampleName 是Name文档的一部分，Example 是包文档的一部分
+2. 执行验证
+    go test 时会运行它们，可能进一步验证结果（// Output: 段）
+3. 真实演练
+    可编辑即时执行，如 golang.org 提供的文档服务（后台 Go Playground）
+
+
+
+案例
+====
+    1.7 Web 服务
+    创建Web服务器
+
+    4.6 文本和HTML模板
+    Web服务器应用模板技术
+
+    4.1 数组
+    SHA256/384/512 哈希算法
+
+    5.5 函数值
+    HTML 解析和通用格式输出
+
+    5.6 匿名函数
+    1. 课程依赖：深度优先算法。
+    2. 网页蜘蛛：链接提取的广度优先算法。
+
+    5.8 Deferred 函数
+    请求Web内容和解析，涉及Response类型操作
+
+
+技巧
+====
+1.
+判断系统int/uint字长（32|64）：
+32 << (^uint(0) >> 63)
+
+2.
+自定义输出方法：
+func (t T) String() string      // 适用 fmt.Println(x) fmt.Println(&x)
+func (t *T) String() string     // 适用 fmt.Println(&x)
