@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用于物联网驱动的加密币服务接口设计</title>
+
+
+<style type="text/css">
+    body {
+        margin: 0;
+    }
+    #ArtText {
+        width: 748px;
+        font-size: 15px;
+        line-height: 150%;
+        color: #505050;
+        margin: 10px auto;
+        text-shadow: 0 1px 1px #eee;
+    }
+    #ArtText h1 {
+    	font-size: 25px;
+    	text-align: center;
+    	margin: 40px 0;
+        color: #444;
+    }
+    #ArtText h2 {
+        font-size: 21px;
+        color: #432;
+        margin: 30px 0 15px;
+        font-weight: bold;
+    }
+    #ArtText h3 {
+        font-size: 18px;
+        font-weight: bold;
+        color: #036;
+    }
+    #ArtText h3:before {
+        content: "➥";
+        margin-right: 4px;
+    }
+    #ArtText h4 {
+        font-size: 15px;
+        font-weight: bold;
+        margin: 20px 0 0;
+        color: 000;
+    }
+    #ArtText ul {
+        margin: 0;
+        line-height: 180%;
+    }
+    #ArtText ul.codes {
+        list-style: none;
+        padding: 8px 8px 8px 30px;
+        background-color: #ffe;
+        border: 1px #ccc dotted;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+    #ArtText li.comment {
+        margin-bottom: -6px;
+        margin-top: 5px;
+    }
+    #ArtText ol {
+        border: 1px #ccc dotted;
+        border-radius: 3px;
+        font-size: 14px;
+        padding: 10px 10px 10px 46px;
+        background-color: #f7f7f7;
+        line-height: 180%;
+    }
+    #ArtText p {
+        margin-bottom: 10px;
+    }
+    #ArtText code {
+        color: #000;
+    }
+    #ArtText ul.codes code {
+        font-family: monospace;
+        color: #272;
+    }
+    #ArtText pre {
+        margin: 4px 0;
+        padding: 2px 10px;
+        background-color: #ffe;
+        font-size: 12px;
+        border: 1px #ccc dotted;
+        border-radius: 3px;
+        line-height: 125%;
+        color: #333;
+        text-shadow: 0 0 1px #eee;
+    }
+    #ArtText p.tips {
+        color: #600;
+        font-size: 14px;
+    }
+    #ArtText p.tips:before {
+        content: "★";
+        margin-right: 5px;
+        color: #b33;
+        margin-left: 5px;
+    }
+    #ArtText p.ps {
+        color: #432;
+    }
+    #ArtText p.about {
+        font-size: 14px;
+        margin-top: 90px;
+        color: #777;
+    }
+    #ArtText a {
+        color: #888;
+    }
+    p.copyleft {
+        background-color: #222;
+        border: 1px #ccc solid;
+        padding: 15px;
+        font-size: 12px;
+        color: #777;
+        text-shadow: 0 0 1px #000;
+        text-align: center;
+        margin: 20px 0 0;
+    }
+</style>
+
+
+</head>
+<body>
+
+
+<article id="ArtText">
+	<h1>用于物联网驱动的加密币服务接口设计</h1>
+	<header>
+        <p>目前，加密币与物联网各是一个系统，两者并没有直接的逻辑关系。物联网里的支付结算要如何衔接到加密币系统上去呢？</p>
+        <p>一种可能的方式是在物联网里整合加密币技术，建立一套专用的物联网数字支付系统（尚无现成的案例）。这需要大量的投入，包括研发的资金和人力。这种方式对于开放的社区基本行不通。</p>
+        <p>这里我们提出一种简单的方案：在现有的加密币系统里加入一个机制——「交易监听和回调」。</p>
+        <p>例如当外部物联网需要探测用户（或其它设备）发送的付款情况时，可以用「收款地址」、「最小金额」和一个「外部命令」在加密币的客户端（服务器）上进行登记注册。一旦客户端检测到目标地址上收到付款，即执行已经登记的外部命令，从而实现加密币系统与外部世界的联动。这有点类似于浏览器中<code>JavaScript</code>响应用户行为的工作方式——事件驱动模型。</p>
+        <p>或许我们可以认为这是一种“交易驱动”的工作模型。在这里，加密币系统更像是一个“引擎”，而非一个“平台”。当然，这个机制其实只存在于客户端中，由客户端独立提供交易的监听回调服务，对核心协议没有任何影响。所以这也不影响核心系统向平台化方向发展。</p>
+        <p>我们以<code>Peercoin</code>加密币为例，进行简单的设计探讨。</p>
+    </header>
+
+    <h2>基本设计</h2>
+    <h3>登记与注销（命令）：</h3>
+    <h4>付款监听（pay listen）</h4>
+    <ul class="codes">
+        <li><code>ppcoind attach-payout &lt;ppc-address&gt; &lt;min-amount&gt; "command"</code>&nbsp;&nbsp;&nbsp;&nbsp;//登记</li>
+        <li><code>ppcoind detach-payout &lt;ppc-address&gt;</code>&nbsp;&nbsp;&nbsp;&nbsp;//注销</li>
+    </ul>
+    <h4>收款监听（receive listen）</h4>
+    <ul class="codes">
+        <li><code>ppcoind attach-receivables &lt;ppc-address&gt; &lt;min-amount&gt; "command"</code>&nbsp;&nbsp;&nbsp;&nbsp;//登记</li>
+        <li><code>ppcoind detach-receivables &lt;ppc-address&gt;</code>&nbsp;&nbsp;&nbsp;&nbsp;//注销</li>
+    </ul>
+    <h4>说明：</h4>
+    <ul>
+        <li><code>min-amount</code>指定监听的最小值（包括该值），这样可以略过不必要的细小支付；</li>
+        <li>指定的值包含单位字符，<code>p->PPC</code>，<code>m->mPPC</code>，<code>u（U小写）->µPPC</code>，无单位字符默认为<code>PPC</code>；</li>
+        <li>监听地址是任意的，与当前客户端钱包内的地址无关；</li>
+    </ul>
+    <h3>示例：</h3>
+    <ul class="codes">
+        <li class="comment">//如果监听地址收到大于等于10PPC的付款，调用外部命令"door-on"</li>
+        <li><code>ppcoind attach-receivables PKgs4ERqhwB6jvHvNUTvzFZXPtHMK8eoCr 10.0 "door-on"</code></li>
+        <li class="comment">//如果监听到地址对外支付大于等于100mPPC（0.1PPC）付款，调用外部命令"watch-done"</li>
+        <li><code>ppcoind attach-payout PKgs4ERqhwB6jvHvNUTvzFZXPtHMK8eoCr 100m "watch-done"</code></li>
+        <li class="comment">//如果监听到地址对外有任何付款行为，调用外部命令"report"</li>
+        <li><code>ppcoind attach-payout PKgs4ERqhwB6jvHvNUTvzFZXPtHMK8eoCr 0 "report"</code></li>
+        <li class="comment">//注销对该地址的收款监听</li>
+        <li><code>ppcoind detach-receivables PKgs4ERqhwB6jvHvNUTvzFZXPtHMK8eoCr</code></li>
+    </ul>
+    <h3>监听的各个阶段：</h3>
+    <ol>
+        <li>检测到交易；</li>
+        <li>检测到交易<code>10</code>秒后未收到双花警告；(注：<code>10</code>秒为可配置值)</li>
+        <li><code>1</code>个确认完成；</li>
+        <li>第<code>n</code>个确认完成；（可配置，如<code>6,120</code>等）</li>
+        <li>延时交易的到期确认；</li>
+        <li>其它……</li>
+    </ol>
+    <h3>外部命令接收参数（JSON）：</h3>
+    <h4>付款（payout）</h4>
+    <pre>
+{
+    "type":         "out",          // 类型-付出
+    "network":      "peercoin",     // 网络
+    "original":     &lt;address&gt;,      // 付款地址（即注册地址）
+    "txid":         &lt;translation&gt;,  // 交易ID
+    "to": [
+        {
+            "address":  &lt;string&gt;,   // 目标地址
+            "amount":   &lt;number&gt;    // 发送金额
+        }
+    ],
+    "total":        &lt;number&gt;,       // 当前地址发送的总金额
+    "confirmed":    &lt;integer&gt;,      // 确认次数（-1表示刚刚发现，0表示10秒内没有发现冲突的支付——双花警告）
+    "balance":      &lt;number&gt;,       // 当前地址余额
+    "message":      &lt;string&gt;        // 交易中的40字节数据
+}</pre>
+    <h4>收款（receivables）</h4>
+    <pre>
+{
+    "type":         "in",           // 类型-收入
+    "network":      "peercoin", 
+    "original":     &lt;address&gt;,      // 收款地址（即注册地址）
+    "txid":         &lt;translation&gt;,
+    "from": [
+        {
+            "address":  &lt;string&gt;,   // 来源地址
+            "amount":   &lt;number&gt;    // 接收金额
+        }
+    ],
+    "total":        &lt;number&gt;,       // 当前地址收到的总金额
+    "confirmed":    &lt;integer&gt;,
+    "balance":      &lt;number&gt;,       // 当前地址余额（未确认时余额不包含total）
+    "message":      &lt;string&gt;
+}</pre>
+    <p class="tips">注：外部命令接收JSON格式的字符串参数，解析获取数据、执行自身逻辑。</p>
+
+    <h2>应用场景</h2>
+    <h3>自动售货机：</h3>
+    <ol>
+        <li>用户点击售货机屏幕上的商品名称，屏幕显示一个二维码，用户用手机扫描，支付某零售币；</li>
+        <li>售货机控制单元（树莓派）检测到付款交易，触发预先登记的操作命令，传递必要的信息（message：机器和商品编号）；</li>
+        <li>操作命令解析传递过来的信息，合法，启动售货机出货控制；</li>
+    </ol>
+    <h3>开放式寄住（有保安）：</h3>
+    <p>小梦出差，深夜来到某一城镇，四邻安睡。</p>
+    <ol>
+        <li>发现一家开放式旅社，来到空闲居室门口，按门锁开启按钮；</li>
+        <li>门边显示屏上出现一个价格说明和支付二维码，价格公道。小梦掏出手机扫描二维码支付；</li>
+        <li>门锁控制单元检测到付款交易，触发预先登记的门锁控制程序，传递必要的信息；</li>
+        <li>控制程序解析传递过来的信息，合格，开门。小梦终于可以享受一下睡觉觉了；</li>
+    </ol>
+    <h3>房屋产权证明：</h3>
+    <p>2020年的某天，多多想投资干点事但没钱，手头有几套房产准备卖一套，倩倩正准备安家想买房子。于是他们见面了……</p>
+    <p>因为成本的原因，2020年的<code>Peercoin</code>网络已经十分强大（数十万节点遍布全球），<code>PPC</code>被用于实施各种「证明」，拥有公认的信用权威。</p>
+    <h4>购房流程如下：</h4>
+    <ol>
+        <li>倩倩和多多来到房产管理中心，登记了付款和收款的<code>NuBits</code>地址、联系手机号；</li>
+        <li>几天后，倩倩将协商的20万房款（<code>NBT</code>）打到了多多的<code>NuBits</code>账户上；</li>
+        <li>负责房产转移登记的nu客户端检测到这笔交易，经过<code>120</code>个确认后，该nu客户端触发了预先注册的处理程序<code>houseAdm</code>；</li>
+        <li><code>houseAdm</code>从倩倩支付给多多的<code>NBT</code>交易中取得了倩倩的<code>身份ID</code>和多多的<code>房产ID</code>，然后构造了一份新的房产所有权证明（数字式）；</li>
+        <li>倩倩为房产新主人的证明被<code>houseAdm</code>嵌入在一笔<code>PPC</code>交易中，发送到了经久不衰的<code>Peercoin</code>网络；</li>
+        <li>倩倩和多多在<code>houseAdm</code>处登记有手机号。当<code>Peercoin</code>网络完成了这笔交易的<code>6</code>个确认后，<code>houseAdm</code>登记在<code>Peercoin</code>客户端上的监听被触发，然后<code>houseAdm</code>短信通知了他们；</li>
+    </ol>
+    <p class="tips">注：houseAdm在两个网络上都注册了监听；倩倩和多多也可以自己去Peercoin网络查询结果。</p>
+    <h3>优点：</h3>
+    <ul>
+        <li>这种机制将加密币和外部系统分离开来，使得可以很容易将支付运用在任何系统之上；</li>
+        <li>这种分离带来的解耦，也使得任何加密币都可以应用到同一个系统上，两者是自由的“多对多”关系；</li>
+    </ul>
+
+    <h2>需要注意的问题</h2>
+    <p>在前面的3个应用场景中，前2个场景对付款响应有较高的实时性要求。一般的，我们希望在对自动售货机付款之后能立即拿到东西，支付了住宿费用后，门很快的就打开了~~所以，加密币支付响应的即时性很重要。</p>
+    <p>在区块链的世界里，没有得到正式确认（至少1个区块完成）的交易被称为0确认交易。为了实时性，我们只能接受这种没有确认的交易，但这种做法可能会遭遇双花攻击。在Bitcoin的设计中，如果节点检测到一笔双花的交易，会广播一个警告。基于P2P数据传播的原理，我们需要一个简短的延时，如5-10秒，以等待可能存在的那个警告（双花可在地球的另一端发起）。</p>
+    <p>如果对实时性要求更高（如3秒以内），或许采用中心化的局部子系统更好——它们有可靠的物理连接和高速带宽，并且遭受攻击的可能性更低。</p>
+
+    <h2>题外话</h2>
+    <p>目前对于类Bitcoin的加密币应用，大多数趋向于一种“平台”思维——即把区块链作为一个承载交互数据的工具。这使得区块链更像是一个仓库。P2P网络用于存储会产生大量的数据冗余，这在效率和成本上似乎划不来。</p>
+    <p>换一种角度，天生具有信用特质的区块链是否可以让它继续保持精简？我们只把它当做一个驱动信用的“引擎”，由外部通过接口进行衔接，并依然由外部系统自身行使其功能。在这里，外部系统仅需要“略作调整”，改变它们的某一部分驱动来源——由区块链负责的那些~~</p>
+    <p>期待您的思考……</p>
+
+    <p class="about">
+    	关于作者<br>
+    	微博：@比特点点<br>
+    	邮箱：zhliner@gmail.com<br>
+        支持：PPC中国社区（感谢：圆点，快乐的蘑菇，Miner，海，Jimmy2011，happypeer）<br>
+    	打赏：<a href="http://ppc.blockr.io/address/info/PXheD3xDPu2ZXUmjrXSDFZ4Yi3YJM3kmTu" target="_blank">PXheD3xDPu2ZXUmjrXSDFZ4Yi3YJM3kmTu</a>
+        <a href="https://blockchain.info/address/1Q7U45ZNLyYNYe6yWT7gaf6H6JNRB9Jeih" target="_blank">1Q7U45ZNLyYNYe6yWT7gaf6H6JNRB9Jeih</a><br>
+        QQ：260134453
+    </p>
+    <br>
+
+    <p class="tips thanks">注：特别感谢快乐的蘑菇提供的关于物联网支付的思考，和他对于加密货币应用于物联网的成果的分享。</p>
+</article>
+<p class="copyleft">版权：本文自发布之日起即属公共领域，任何人皆可自由的转载、引用、修改。如为转载或原文引用，请注明出处。</p>
+
+
+</body>
+</html>
