@@ -7,8 +7,8 @@
 <style type="text/css">
     #ArtText {
         width: 780px;
-        font-size: 14px;
-        line-height: 150%;
+        font-size: 11pt;
+        line-height: 180%;
         color: #555;
         margin: 10px auto;
     }
@@ -67,7 +67,7 @@
     <p style="font-weight:bold;">图1：普通登录过程</p>
     <p><img width="760" src="images/bitcoin-auth-1.png" /></p>
     <blockquote style="margin:0; width:728px; padding:5px 15px; background-color:#fffff0; border:1px #ccc solid;">
-        <h5 style="font-weight:bold;font-size:15px;margin:6px;border-bottom:1px #ccc dotted;">⇧ 说明</h5>
+        <h5 style="font-weight:bold;font-size:15px;margin:6px;border-bottom:1px #ccc dotted;">? 说明</h5>
         <ol>
             <li>为避免相同公钥在不同网站上生成相同的账户ID，建议账户的生成方式为：Hash(公钥+域名)。</li>
             <li>注册：用户端提供3项数据。
@@ -91,7 +91,7 @@
     <p style="font-weight:bold;margin-top:30px;">图2：私钥挂失交易</p>
     <p style="margin-top:20px;"><img width="760" src="images/bitcoin-auth-2.png" /></p>
     <blockquote style="margin:0; width:728px; padding:5px 15px; background-color:#fffff0; border:1px #ccc solid;">
-        <h5 style="font-weight:bold;font-size:15px;margin:6px;border-bottom:1px #ccc dotted;">⇧ 说明</h5>
+        <h5 style="font-weight:bold;font-size:15px;margin:6px;border-bottom:1px #ccc dotted;">? 说明</h5>
         <ol>
             <li>私钥挂失其实无需与网站方有任何联系。如果用户怀疑自己的主令牌私钥已经泄漏，可以直接用备用令牌的比特币账户向主令牌地址发送一笔微小的费用，以标记私钥的挂失。</li>
             <li>向丢失/泄漏的主令牌地址发送费用，这基本上是一个无理的设计——确实有点郁闷。但我们没有其它好的办法来告知了。如果你的私钥是被盗了，相比于可以立即通知所有相关网站冻结账户，这点付出是值得的，并且数量随你定（仅仅受限于Bitcoin网络的最小支付额度）。而如果你确信只是丢失了私钥，你可以不必挂失——用备用令牌正常登录/更新即可。</li>
@@ -100,7 +100,7 @@
     <p style="font-weight:bold;margin-top:30px;">图3：令牌更新逻辑</p>
     <p style="margin-top:20px;"><img width="760" src="images/bitcoin-auth-3.png" /></p>
     <blockquote style="margin:0; width:728px; padding:5px 15px; background-color:#fffff0; border:1px #ccc solid;">
-        <h5 style="font-weight:bold;font-size:15px;margin:6px;border-bottom:1px #ccc dotted;">⇧ 说明</h5>
+        <h5 style="font-weight:bold;font-size:15px;margin:6px;border-bottom:1px #ccc dotted;">? 说明</h5>
         <ol>
             <li>这里，新的主令牌应当使用原来的备用令牌，而不是刚刚提交的新备用令牌。这样设计，原备用令牌就可以简单的更新，从而简化整体的逻辑。</li>
             <li>简单地，如果用备用令牌登录，就意味着主令牌丢失，这也符合实际情况。因为备用令牌是需要单独存放的——它不应当和使用中的主令牌存储在一起，而当你把备用令牌导入使用中的设备时，很明显是因为主令牌丢失（或泄漏）了。</li>
@@ -113,7 +113,7 @@
     <p>这是一种全新的用户登录和验证方式。与传统的方式不同，如果实现良好，<b style="color:#f00;">其登录和验证的过程可以极其简单</b>。除了注册时网站会要求填写一些个人的基本信息外（如邮箱、昵称），在日常的登录中，你甚至不用输入任何东西。如下小场景：</p>
     <blockquote style="margin:5px 30px;background-color:#fffff0;padding:2px 20px;border:1px #ccc solid;">
         <p>回到家，老公的笔记本没关，Chrome浏览器上正开着数字货币行业里的专业资讯网站“壹比特”。几天没关注Bitcoin了，小香想逛逛论坛，顺便把送的微币领了。</p>
-        <p>懒得去打开自己那台小本，坐到老公的电脑前。抬手，智能手环还有些电，已经与老公的笔记本连好了。智能手环抬手就亮了，香香按了两下上面的一个按钮，不一会儿，浏览器上那个“快登”插件亮了，页面上弹出一个登录确认对话框。点击确认，香香登进了坛子……账户上又增加了5µB，呵呵，香香开心极了。。</p>
+        <p>懒得去打开自己那台小本，坐到老公的电脑前。抬手，智能手环还有些电，已经与老公的笔记本连好了。智能手环抬手就亮了，香香按了两下上面的一个按钮，不一会儿，浏览器上那个“快登”插件亮了，页面上弹出一个登录确认对话框。点击确认，香香登进了坛子……账户上又增加了5μB，呵呵，香香开心极了。。</p>
     </blockquote>
     <p>看到了吗？香香女士登录一共只做了3个动作：1、抬手；2、按两下按钮开启了插件连接；3、点击登录确认。</p>
     <p>哦天呐！怎会如此简单？——可能吗？</p>

@@ -12,7 +12,7 @@
     #ArtText {
         width: 748px;
         font-size: 15px;
-        line-height: 150%;
+        line-height: 180%;
         color: #505050;
         margin: 10px auto;
         text-shadow: 0 1px 1px #eee;
@@ -35,7 +35,7 @@
         color: #036;
     }
     #ArtText h3:before {
-        content: "➥";
+        content: "\27A5";
         margin-right: 4px;
     }
     #ArtText h4 {
@@ -46,7 +46,6 @@
     }
     #ArtText ul {
         margin: 0;
-        line-height: 180%;
     }
     #ArtText ul.codes {
         list-style: none;
@@ -55,6 +54,7 @@
         border: 1px #ccc dotted;
         border-radius: 3px;
         font-size: 13px;
+        line-height: 180%;
     }
     #ArtText li.comment {
         margin-bottom: -6px;
@@ -66,7 +66,6 @@
         font-size: 14px;
         padding: 10px 10px 10px 46px;
         background-color: #f7f7f7;
-        line-height: 180%;
     }
     #ArtText p {
         margin-bottom: 10px;
@@ -85,7 +84,7 @@
         font-size: 12px;
         border: 1px #ccc dotted;
         border-radius: 3px;
-        line-height: 125%;
+        line-height: 130%;
         color: #333;
         text-shadow: 0 0 1px #eee;
     }
@@ -153,7 +152,7 @@
     <h4>说明：</h4>
     <ul>
         <li><code>min-amount</code>指定监听的最小值（包括该值），这样可以略过不必要的细小支付；</li>
-        <li>指定的值包含单位字符，<code>p->PPC</code>，<code>m->mPPC</code>，<code>u（U小写）->µPPC</code>，无单位字符默认为<code>PPC</code>；</li>
+        <li>指定的值包含单位字符，<code>p->PPC</code>，<code>m->mPPC</code>，<code>u（U小写）->μPPC</code>，无单位字符默认为<code>PPC</code>；</li>
         <li>监听地址是任意的，与当前客户端钱包内的地址无关；</li>
     </ul>
     <h3>示例：</h3>
