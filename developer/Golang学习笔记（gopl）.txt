@@ -1,11 +1,195 @@
+1.3 查找重复的行
+================
+bufio 包处理输入内容。
+例：
+    counts := make(map[string]int)
+    input := bufio.NewScanner(os.Stdin)  // 扫描器
+    for input.Scan() {  // 迭代扫描，读入下一行，并移除行末的换行符
+        counts[input.Text()]++  // 提取行
+    }
+    注记：
+    x.Scan返回bool类型而不是一个错误，是一种聪明的接口设计（Scan不容易出错）。
+
+文件读取示例：os.Open(pathfile)。
+
+ioutil 包作为输入输出工具函数集，有更好用的高级接口：
+.ReadFile .WriteFile 等。
+一般与strings包配合处理字符串。
+
+
+
+
+1.4 Gif动画
+===========
+颜色和图片类处理。
+image, image/color, image/gif 包。
+
+
+
+
+1.6 并发获取多个URL
+===================
+代码：
+    // 延续时间段
+    start := time.Now()
+    ...
+    time.Since(start).Seconds()
+
+    // 输出黑洞
+    ioutil.Discard
+
+
+
+
 2.1 命令
 ========
 语言关键字，预定义常量、类型和内置函数
 
 
-3.1 整数
+
+
+2.3 变量
 ========
-运算符说明（算术、逻辑、比较）
+省略类型时可以声明一组不同类型的变量
+——通过初始值推导。
+var b, f, s, ui = true, 2.3, "four", uint(999)  // bool, float64, string, uint
+
+初始化表达式还可以是函数调用：
+var f, err = os.Open(name)  // os.Open returns a file and an error
+
+有类型时则只能声明一组同类型的变量。
+var i, j, k int  // int, int, int
+
+效率：
+如果免短生命周期的变量被长生命周期的对象引用，
+该变量将无法垃圾回收，从而可能影响性能。
+
+
+
+
+3.2 浮点数
+==========
+如果一个函数返回的浮点数结果可能失败，最好的做法是用单独的标志报告失败：
+如：
+    func compute() (value float64, ok bool) {
+        // ...
+        if failed {
+            return 0, false
+        }
+        return result, true
+    }
+
+
+
+
+3.5 字符串
+==========
+自动的隐式解码UTF8编码字符串
+1. range
+    n := 0
+    // for _, _ = range s {
+    // 可以忽略全部变量：
+    for range s {
+        n++
+    }
+
+2. []rune类型转换
+    s := "プログラム"
+    fmt.Printf("% x\n", s)  // "e3 83 97 e3 83 ad e3 82 b0 e3 83 a9 e3 83 a0"
+    r := []rune(s)
+    fmt.Printf("%x\n", r)   // "[30d7 30ed 30b0 30e9 30e0]"
+
+    注：
+    将[]rune序列转换为字符串时，会自动进行UTF8编码。
+
+显式解码UTF8可用utf8包。
+
+整数可以直接转换为字符串（仅包含一个unicude字符）。
+无效码点转换为\uFFFD。
+
+相关包：
+    strings  查询、替换、比较、截断、拆分和合并等。
+    bytes    同上类似，但可修改（非只读）。关注bytes.Buffer。
+    strconv  布尔型、整型数、浮点数和对应字符串的相互转换。
+    unicode  对Unicode字符的处理（rune），如像IsDigit、IsLetter、IsUpper和IsLower等。
+
+
+
+
+3.6 常数
+========
+能常数化尽量常数化，除了可以提高效率外，当操作数是常量时，一些运行时的错误也可以在编译时被发现。
+如整数除零、字符串索引越界、任何导致无效浮点数的操作等。
+
+常量可以像变量一样在声明时指定类型。如：
+    const noDelay time.Duration = 0
+
+批量声明的常量，后面的赋值表达式等于前面的赋值表达式。
+    const (
+        a = 9
+        b  // b = 9
+    )
+
+iota常量生成器语法，源于上面的特性。
+    type Weekday int
+    const (
+        // 在组常量声明的首行，iota被设置为0
+        // 而不是iota首次出现的行设置为0
+        Sunday Weekday = iota
+        Monday
+        Tuesday
+        Wednesday
+        Thursday
+        Friday
+        Saturday
+    )
+    const (
+        A = 2
+        // iota已递增到1
+        B = iota * A
+        C
+    )
+
+例（位操作）：
+    type Flags uint
+    const (
+        FlagUp Flags = 1 << iota // is up
+        FlagBroadcast            // supports broadcast access capability
+        FlagLoopback             // is a loopback interface
+        FlagPointToPoint         // belongs to a point-to-point link
+        FlagMulticast            // supports multicast access capability
+    )
+
+    // gopl.io/ch3/netflag
+    func IsUp(v Flags) bool     { return v&FlagUp == FlagUp }
+    func TurnDown(v *Flags)     { *v &^= FlagUp }
+    func SetBroadcast(v *Flags) { *v |= FlagBroadcast }
+    func IsCast(v Flags) bool   { return v&(FlagBroadcast|FlagMulticast) != 0 }
+
+    func main() {
+        var v Flags = FlagMulticast | FlagUp
+        fmt.Printf("%b %t\n", v, IsUp(v)) // "10001 true"
+        TurnDown(&v)
+        fmt.Printf("%b %t\n", v, IsUp(v)) // "10000 false"
+        SetBroadcast(&v)
+        fmt.Printf("%b %t\n", v, IsUp(v))   // "10010 false"
+        fmt.Printf("%b %t\n", v, IsCast(v)) // "10010 true"
+    }
+
+例2：
+    const (
+        _ = 1 << (10 * iota)  // 支持 _ 忽略目标标识
+        KiB // 1024
+        MiB // 1048576
+        GiB // 1073741824
+        TiB // 1099511627776             (exceeds 1 << 32)
+        PiB // 1125899906842624
+        EiB // 1152921504606846976
+        ZiB // 1180591620717411303424    (exceeds 1 << 64)
+        YiB // 1208925819614629174706176
+    )
+
+
 
 
 4.3 Map
@@ -13,6 +197,8 @@
 bufio包分词：
     input := bufio.NewScanner(os.Stdin)
     input.Split(bufio.ScanWords)
+
+
 
 
 4.4 结构体
@@ -38,6 +224,8 @@ Go用结构体的“组合”逻辑实现了类似继承的概念，并且这里
 同时，小写的类型名截断了外部访问（相同的导出规则），就像私有继承一样。
 
 
+
+
 5.4 错误
 ========
 1.
@@ -51,6 +239,8 @@ Go用结构体的“组合”逻辑实现了类似继承的概念，并且这里
     3. 终止或抛出恐慌（panic）。——错误导致了内部不一致性
     4. 简单记录（可能为log）。一般为网络方式中的非紧密关系
     5. 直接忽略。无关程序正常功能，如删除操作系统临时文件可能产生的失败
+
+
 
 
 5.6 匿名函数
@@ -98,12 +288,16 @@ Go用结构体的“组合”逻辑实现了类似继承的概念，并且这里
     link, err := resp.Request.URL.Parse(hrefVal)
 
 
+
+
 6.3 通过嵌入结构体来扩展类型
 ============================
 附：
 针对S结构的匿名成员T，S或*S的方法集包含T接收器提升的方法，且*S的方法集还包含*T接收器提升的方法。
 同时，如果S的实例是一个变量s，则s也可以访问*T接收器的方法，但这仅仅是一个语法糖（编译器自动取地址求值：(&s).Method）
 这在一个临时实例或类型针对接口的实现里体现了出来。
+
+
 
 
 6.4 方法值和方法表达式
@@ -125,6 +319,8 @@ scale := (*Point).ScaleBy
 scale(&x, ...)
 
 
+
+
 7.3 实现接口的条件
 ==================
 接口：
@@ -133,6 +329,8 @@ scale(&x, ...)
 注：
 具体类型的方法集一般遵循“自我完整”的规则编写，因此大多已经完成。
 这里的接口可以滞后于类型实现，接口是灵活的，因新的功能函数而创生。
+
+
 
 
 7.5 接口值
@@ -166,6 +364,7 @@ scale(&x, ...)
 
 
 
+
 7.6 sort.Interface接口
 ======================
 sort.Reverse内部实现
@@ -186,7 +385,7 @@ sort.Reverse内部实现
     func (r reverse) Less(i, j int) bool {
     	return r.Interface.Less(j, i)
     }
-    
+
     // 实例data封装
     func Reverse(data Interface) Interface {
     	return &reverse{data}
@@ -202,6 +401,8 @@ sort.Reverse内部实现
     func (x customSort) Len() int           { return len(x.t) }
     func (x customSort) Less(i, j int) bool { return x.less(x.t[i], x.t[j]) }
     func (x customSort) Swap(i, j int)      { x.t[i], x.t[j] = x.t[j], x.t[i] }
+
+
 
 
 7.13 类型分支（switch）
@@ -225,6 +426,8 @@ sort.Reverse内部实现
     default:  // type interface{}
         panic(fmt.Sprintf("unexpected type %T: %v", x, x))
     }
+
+
 
 
 8.5 并发的循环
@@ -256,6 +459,8 @@ sync.WaitGroup
     for v := range ch {
         //...
     }
+
+
 
 
 8.6 并发的Web爬虫
@@ -307,6 +512,8 @@ sync.WaitGroup
     }
 
 
+
+
 8.8 示例：并发的目录遍历
 ========================
 有节制的目标文件大小统计（类似Unix/Linux下du）。
@@ -319,6 +526,8 @@ sync.WaitGroup
         defer func() { <-sema }() // release token
         //...获取目录内容
     }
+
+
 
 
 9.1 竞争条件
@@ -346,6 +555,8 @@ channel传递数据实际上是一种“专属接触”机制，私有化当前�
    > 通过channel流水线式传递，获得严格的顺序逻辑（串行化）；
    > 在channel中传递channel，可构成回馈专用通道或代表自身的代理人（8.10聊天服务）；
 3. 互斥锁。
+
+
 
 
 9.2 sync.Mutex互斥锁
@@ -394,11 +605,15 @@ Golang的互斥锁是不支持“重入”的，因此锁应当在导出的函�
 包&结构内小写成员数据的隐藏特性（封装），也可以辅助我们实现并发的不变性。
 
 
+
+
 9.4 内存同步
 ============
 所有并发的问题都可以简单规避：
 1. 可能的话，将变量限定在goroutine内部；
 2. 如果多个goroutine都需要访问一个变量，使用互斥锁；
+
+
 
 
 9.7 竞争条件检测
@@ -411,6 +626,8 @@ Golang的互斥锁是不支持“重入”的，因此锁应当在导出的函�
 使用
 > 有时间和内存上的性能损失，一般用于测试环节或试生产环境。
 > 如果必要也可酌情用于生产环境以收集运行时数据反馈。
+
+
 
 
 10.3 包声明
@@ -427,6 +644,8 @@ Golang的互斥锁是不支持“重入”的，因此锁应当在导出的函�
 包的默认名称不是路径的末段名，而是源文件中package声明的名称。
 
 
+
+
 10.5 包的匿名导入
 =================
 匿名导入支持“驱动注册”类的逻辑结构。
@@ -437,6 +656,8 @@ Golang的互斥锁是不支持“重入”的，因此锁应当在导出的函�
 - SQL/不同的数据库驱动。    database/sql, .../mysql|postgres|sqlite3（通过sql包接口注册）
 
 注记：有点像是“包”层次的“接口”能力。
+
+
 
 
 10.7 工具
@@ -459,6 +680,8 @@ go list
 包元信息：
     go list -json html  // 用JSON格式列出html包的元信息，支持...多个目标包匹配
     go list -f "..." xx // f参数后跟模板字符串，可实现复杂的包信息定制输出
+
+
 
 
 11.2 测试函数
@@ -492,6 +715,8 @@ B. 从目标函数参数入手。编写一个可构造随机合法参数的函�
     var IsSpace = isSpace
 
 
+
+
 11.3 测试覆盖率
 ===============
 首先通过测试
@@ -503,11 +728,15 @@ go tool cover -html=x.out           // 从数据文件生成HTML报告页面
 go test -cover ...      // 直接输出一个摘要
 
 
+
+
 11.4 基准测试
 =============
 也即性能测试。
 go test -bench=xx ...               // bench参数后跟正则式（xx，支持“.”指任意名），匹配测试函数
 go test -bench=xx -benchmem ...     // benchmem选项增加内存情况报告
+
+
 
 
 11.5 剖析
@@ -522,6 +751,8 @@ go tool pprof ...
     // -text 文本格式
     // -web  函数有向图（需GraphViz）
     go tool pprof -text -nodecount=10 ./http.test cpu.out
+
+
 
 
 11.6 示例函数
@@ -556,6 +787,8 @@ go tool pprof ...
 
     5.8 Deferred 函数
     请求Web内容和解析，涉及Response类型操作
+
+
 
 
 技巧
