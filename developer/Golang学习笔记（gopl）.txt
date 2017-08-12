@@ -50,6 +50,14 @@ image, image/color, image/gif 包。
 
 2.3 变量
 ========
+种类：
+    基础类型6： 整型、浮点数、复数、布尔值、字符串、常量
+    复合类型4： 数组（[n]T）、切片（[]T）、映射（map[K]V）、结构（struct{}）
+    其    它4： 指针（*）、接口（interface{}）、通道（chan T）、函数（func）
+    注：
+    - make创建：切片、映射、通道；
+    - nil零值： 切片、映射、其它4种（指针、接口、通道、函数）；
+
 省略类型时可以声明一组不同类型的变量
 ——通过初始值推导。
 var b, f, s, ui = true, 2.3, "four", uint(999)  // bool, float64, string, uint
@@ -223,6 +231,9 @@ iota常量生成器语法，源于上面的特性。
 
 4.2 切片
 ========
+make 适用：
+    make([]T, len, cap)  // 同 make([]T, cap)[:len]
+
 代码：
     // 切片元素反转（通用）
     func reverse(s []int) {
@@ -232,6 +243,9 @@ iota常量生成器语法，源于上面的特性。
     }
 
 代码：
+    // 技巧：
+    // 原切片内存复用（避免开辟新内存）
+    // 可用来过滤或合并序列中相邻的元素。
     func nonempty2(strings []string) []string {
         // 零长度引用原切片
         out := strings[:0]
@@ -243,11 +257,35 @@ iota常量生成器语法，源于上面的特性。
         return out
     }
 
+可用于模拟栈结构和操作（stack）
+例：
+    stack = append(stack, v)     // push v
+    top  := stack[len(stack)-1]  // top of stack
+    stack = stack[:len(stack)-1] // pop
+
 
 
 
 4.3 Map
 =======
+make 适用：
+    make(map[T]V)  // T 类型必须支持“==”运算符
+
+大部分操作如：查找、删除、len和range循环都可以安全工作在nil上，但插入时需要一个有效值（内存空间）。
+
+删除成员操作由内置函数 delete() 实施。
+
+存在性测试：
+    age, ok := ages["bob"]
+    if !ok { ... }
+    或
+    if age, ok := ages["bob"]; !ok {
+        //...
+    }
+
+统计输入中Unicode码点示例：
+    （略--参看gopl.io/ch4/charcount）
+
 bufio包分词：
     input := bufio.NewScanner(os.Stdin)
     input.Split(bufio.ScanWords)
@@ -257,7 +295,11 @@ bufio包分词：
 
 4.4 结构体
 ==========
-1.
+用二叉树排序：
+    1. 构造二叉树有序插入值；
+    2. 从二叉树迭代顺序取值；
+    代码：gopl.io/ch4/treesort
+
 因为结构体的可比较性，设计良好的结构体用于map的键会很友好。
 （注意：浮点数用于==比较并不安全）
 例：
@@ -265,17 +307,28 @@ bufio包分词：
         hostname string
         port     int
     }
-    hits := make(map[address]int)
-    hits[address{"golang.org", 443}]++
+    hits := make( map[address]int )
+    // 地址&端口做键，清晰明确
+    hits[ address{"golang.org", 443} ]++
 
-2.
 小写的结构体成员/字段用于包内使用。
 
-3.
 Go用结构体的“组合”逻辑实现了类似继承的概念，并且这里“数据”的概念也更加明晰。
 
 嵌入的类型为匿名成员，但它其实也是有名称的——就是类型名本身。可以通过这个名称正常访问。
 同时，小写的类型名截断了外部访问（相同的导出规则），就像私有继承一样。
+
+
+
+
+4.5 JSON
+========
+与编码不一样，json.Unmarshal解码可以较为自由的选择需要提取的元素。
+只需要定义结构包含感兴趣的成员。
+
+用url.QueryEscape转义用户的查询数据，以使得URL特殊字符可以被正常传递。
+
+示例参看：gopl.io/ch4/github
 
 
 
