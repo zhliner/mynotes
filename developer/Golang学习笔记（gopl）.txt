@@ -192,6 +192,60 @@ iota常量生成器语法，源于上面的特性。
 
 
 
+4.1 数组
+========
+字面值的初始化语法形式：
+    [3]int{1, 3}     // 明确值序列3，顺序初始化前2个元素
+    [...]int{1, 3, 5}   // 自动确定长度3
+    [...]int{99: -1}    // 通过索引指定，无需顺序。
+
+复合类型：array/slice/map/struct 都拥有相似的字面值初始化语法。
+
+成员可比较，则数组本身可比较（相等比较）。
+示例：
+    import "crypto/sha256"
+
+    func main() {
+        c1 := sha256.Sum256([]byte("x"))
+        c2 := sha256.Sum256([]byte("X"))
+
+        // 消息摘要直接比较
+        fmt.Printf("%x\n%x\n%t\n%T\n", c1, c2, c1 == c2, c1)
+        // Output:
+        // 2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881
+        // 4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015
+        // false
+        // [32]uint8
+    }
+
+
+
+
+4.2 切片
+========
+代码：
+    // 切片元素反转（通用）
+    func reverse(s []int) {
+        for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+            s[i], s[j] = s[j], s[i]
+        }
+    }
+
+代码：
+    func nonempty2(strings []string) []string {
+        // 零长度引用原切片
+        out := strings[:0]
+        for _, s := range strings {
+            if s != "" {
+                out = append(out, s)
+            }
+        }
+        return out
+    }
+
+
+
+
 4.3 Map
 =======
 bufio包分词：
