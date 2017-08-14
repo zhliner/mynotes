@@ -333,6 +333,32 @@ Go用结构体的“组合”逻辑实现了类似继承的概念，并且这里
 
 
 
+4.6 文本和HTML模板
+==================
+template.Must() 在包级调用（main之外），预先排除错误的场景。
+在包级也可以有顺序的程序逻辑，一般用于全局环境的准备。
+
+
+
+
+5.1 函数声明
+============
+代码：
+    // 统一函数类型：func(int, int) int
+    func add(x int, y int) int   {return x + y}         // 普通
+    func sub(x, y int) (z int)   { z = x - y; return}   // 语句分号分隔
+    func first(x int, _ int) int { return x }           // _ 标识强调未用
+    func zero(int, int) int      { return 0 }           // 形参名可为空
+
+
+
+5.2 递归
+========
+递归函数用于处理本身拥有递归或有递归逻辑的数据。
+
+
+
+
 5.4 错误
 ========
 1.
