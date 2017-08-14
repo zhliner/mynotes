@@ -361,16 +361,25 @@ template.Must() 在包级调用（main之外），预先排除错误的场景。
 
 5.4 错误
 ========
-1.
 错误不是异常，它是函数正常的返回结果之一。
 错误应当和空值一样被惯常的考虑处理。
 
-2
 错误处理的5个策略：
-    1. 直接返回。可能前附必要的信息
-    2. 重新尝试。应当限于一个合适的时间段内
-    3. 终止或抛出恐慌（panic）。——错误导致了内部不一致性
-    4. 简单记录（可能为log）。一般为网络方式中的非紧密关系
+    1. 直接返回。
+       通常在头部附加当前的必要信息
+
+    2. 重新尝试。应当限于一个合适的时间段内。
+       示例：gopl.io/ch5/wait
+
+    3. 终止（os.Exit/log.Fatalf）或抛出恐慌（panic）。
+       通常仅在main包中执行。库中除非错误导致了内部的不一致性。
+
+    4. 简单记录。一般为网络方式中的非紧密关系，如ping...
+       log
+       log.Printf("ping failed: %v; networking disabled", err)
+       fmt
+       fmt.Fprintf(os.Stderr, "ping failed: %v; networking disabled\n", err)
+
     5. 直接忽略。无关程序正常功能，如删除操作系统临时文件可能产生的失败
 
 
@@ -378,7 +387,22 @@ template.Must() 在包级调用（main之外），预先排除错误的场景。
 
 5.6 匿名函数
 ============
-1.
+课程前置课程的有向拓补排序
+示例：gopl.io/ch5/toposort
+
+函数值的递归调用：
+可先声明一个该函数类型的变量，然后赋值。
+    func topoSort(m map[string][]string) []string {
+        //...
+        var visitAll func([]string)
+        visitAll = func(items []string) {
+            // visitAll标识已经存在
+            // 本赋值语句结束后，变量已经有值。
+            visitAll(...)
+        }
+        //...
+    }
+
 词法作用域的一个陷阱：捕获循环局部变量
 例：
     var rmdirs []func()
@@ -396,14 +420,14 @@ template.Must() 在包级调用（main之外），预先排除错误的场景。
     }
     //...使用 rmdirs 成员
 
-2.
 网页链接提取的“广度优先”算法
+用一个列表方式迭代，后来者替换先前者。
 例：
     func breadthFirst(f func(item string) []string, worklist []string) {
         seen := make(map[string]bool)
         for len(worklist) > 0 {
             items := worklist
-            worklist = nil
+            worklist = nil  // 后面将是一个新的列表
             for _, item := range items {
                 if !seen[item] {
                     seen[item] = true
@@ -413,12 +437,28 @@ template.Must() 在包级调用（main之外），预先排除错误的场景。
         }
     }
 
-3.
 获取A元素href属性链接的绝对路径（含http://）
 例：
     resp, err := http.Get(url)
     //...
     link, err := resp.Request.URL.Parse(hrefVal)
+
+
+
+
+5.8 Deferred函数
+================
+在循环内部使用defer，文件不会被及时关闭。可能耗尽内存。
+可以将单个文件操作定义为单独一个函数（自我管理）。
+代码：
+    for _, filename := range filenames {
+        f, err := os.Open(filename)
+        if err != nil {
+            return err
+        }
+        defer f.Close() // NOTE: risky; could run out of file descriptors
+        // ...process f…
+    }
 
 
 
