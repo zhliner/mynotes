@@ -669,27 +669,113 @@ sort.Reverse内部实现
 
 
 
+7.8 error接口
+=============
+每次返回一个指针/地址而不是值本身，
+使得每一个返回值都不相等——即便它们的值相同。这是返回值和指针的另一个不同点。
+（如对io.EOF的相等判断）
+代码：
+    func New(text string) error {
+        return &errorString{text}
+    }
+
+
+
+
+7.9 示例：表达式求值
+====================
+微型表达式解析器，可借鉴用于“语法分析”场合。
+代码：gopl.io/ch7/eval
+
+
+
+
+7.12 通过类型断言查询接口
+=========================
+对于io.Writer变量w，它的动态类型可能有一个更高效写入字符串的WriteString方法。
+但也可能没有这个方法。如如下方式测试：
+代码：
+    // 定义一个新接口，包含该方法。
+    type stringWriter interface {
+        WriteString(string) (int, error)
+    }
+    // 类型断言，获得类型提升的值
+    if sw, ok := w.(stringWriter); ok {
+        // sw包含Write和WriteString两个方法，
+        // 调用高效版本。
+        return sw.WriteString(s)
+    }
+注：
+没法像动态语言一样直接测试w是否包含目标方法，如：w.WriteString != nil
+
+注意，
+如果一个类型有标准库中接口定义的方法，就应当注意保持方法签名和行为的一致性。
+它们通常更合理，符合普遍性的约定。
+这是一种良好的编码思考方式。
+
+
+
+
 7.13 类型分支（switch）
 =======================
-分支罗列多个类型名、为nil、default时，变量a为原接口值，
+分支罗列多个类型名，当为nil和default时，变量a为原接口值，
 否则为目标类型值。
 例：
     // 假设 x 为 interface{}
     switch a := x.(type) {
     case nil:  // type of a is type of x (interface{})
         return "NULL"
+
     case int, uint: // type of a is interface{}
         return fmt.Sprintf("%d", a)
+
     case bool:  // type bool
         if x {
             return "TRUE"
         }
         return "FALSE"
+
     case string:  // type string
         return sqlQuoteString(x)
+
     default:  // type interface{}
         panic(fmt.Sprintf("unexpected type %T: %v", x, x))
     }
+注：
+case的类型也可以是接口类型，用于判断a的动态类型是否实现了该接口。
+同样也支持多个任意类型并列。
+
+
+
+
+7.14 示例：基于标记的XML解码
+============================
+有序包含函数，类CSS选择器匹配（简单）。
+gopl.io/ch7/xmlselect
+    // x：总集，y子集
+    func containsAll(x, y []string) bool {
+        for len(y) <= len(x) {
+            if len(y) == 0 {
+                return true
+            }
+            if x[0] == y[0] {
+                y = y[1:]
+            }
+            x = x[1:]
+        }
+        return false
+    }
+
+
+
+
+7.15 一些建议
+=============
+当设计一个新的包时，新手Go程序员总是先创建一套接口，然后再定义一些满足它们的具体类型。
+不要再这么做了。
+接口只有当有两个或两个以上的具体类型必须以相同的方式进行处理时才需要。
+
+一个接口只被一个单一的类型实现，只有在解耦包时才需要——因为某种依赖，另一个包里用接口来表达。
 
 
 
