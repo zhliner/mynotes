@@ -1,0 +1,54 @@
+并发是高效程序的基本点。
+以并发的基本立足点，去思考事物逻辑，编写Go程序。Golang提供了并发的基础元件：Channel，Goroutine。
+
+1.
+利用Channel，一个Go程其实就是一个“微服务器”。
+向Go程传递一个关闭控制句柄，Go程返回一个读取Channel。可实现干净的并发Go程设计。
+代码：
+    // file1.go
+    func canceller(stop <-chan struct{}) func() bool {
+        return func() bool {
+            select {
+            case <-stop:
+                return true
+            default:
+                return false
+            }
+        }
+    }
+    // 关闭信号，外部控制
+    stop := make(chan struct{})
+    // 关闭控制句柄
+    cancel := canceller(stop)
+
+    for v := <-Increaser(cancel) {
+        fmt.Println(v)
+        if v == 1000 {
+            close(stop)  // 由外部控制微服务
+        }
+    }
+
+    // file2.go
+    // 微服务生成
+    // 返回一个整数递增器。
+    // - 外部通过close(stop)通知内部结束服务；
+    // - 内部close(ch)结束服务，外部读取关闭信号确认结束；
+    func Increaser(cancel func() bool) <-chan int {
+        ch := make(chan int)
+        go func() {
+            var i int
+            for {
+                if cancel() {
+                    break
+                }
+                ch <- i
+                i++
+            }
+            close(ch)
+        }
+        return ch
+    }
+
+小结：
+    接口是用户，Go程是服务。
+    用微服务的思想思考需求，会自然地走入并发设计。
