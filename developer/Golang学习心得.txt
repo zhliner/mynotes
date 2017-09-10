@@ -55,3 +55,27 @@
 
 服务的逻辑：
     可独立的，不在“流程”之中的——可脱离当前执行流。
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+结构体匿名嵌入未导出类型，但可导出其导出字段，
+这是一种有意思的继承模式，可实现隐藏和公开的某种折衷平衡。
+代码：
+    type info struct {
+        ID   string
+        Name string
+        Age  int
+    }
+    type Info struct {
+        ID   []byte
+        info
+    }
+    // ID 转换，其它成员继承
+    // 隐藏 ID 差别
+    func Load(dt info) Info {
+        id := parse(dt.ID)
+        return Info{id, info{dt}}
+    }
