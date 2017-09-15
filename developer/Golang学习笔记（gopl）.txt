@@ -8,13 +8,13 @@ bufio 包处理输入内容。
         counts[input.Text()]++  // 提取行
     }
     注记：
-    x.Scan返回bool类型而不是一个错误，是一种聪明的接口设计（Scan不容易出错）。
+    x.Scan返回bool类型而不是一个错误，是一种更好的设计，因为Scan不容易出错，且可以直接用在判断位置。
 
 文件读取示例：os.Open(pathfile)。
 
 ioutil 包作为输入输出工具函数集，有更好用的高级接口：
 .ReadFile .WriteFile 等。
-一般与strings包配合处理字符串。
+可与strings包配合处理字符串。
 
 
 
