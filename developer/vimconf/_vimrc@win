@@ -1,0 +1,281 @@
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 基于个人需要定制的 IDE 环境配置
+" 重点支持
+" html javascript php python c/c++ asp
+" 等语言的辅助插件
+"
+" Author: 释什
+" Version: 0.1
+" Last Change: 2012/3/1 0:32:22
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"Get out of VI's compatible mode.
+set nocompatible
+
+"My information (copyright, email, datetime)
+iab xcr 云林小屋
+iab xem zhliner@gmail.com
+iab xdt <c-r>=strftime("%c")<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 通用
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set history=400
+
+" 较好的判断优先级
+set fileencodings=ucs-bom,utf-8,gb18030,cp936,big5,euc-jp,euc-kr,latin1
+" 新建文件默认编码
+set encoding=utf-8
+
+"Enable filetype plugin
+filetype plugin on
+filetype indent on
+
+"Set to auto read when a file is changed from the outside
+set autoread
+
+"Have the mouse enabled all the time:
+set mouse=a
+
+"for 网盘自动同步
+set noswapfile
+
+"Set mapleader
+let mapleader = ","
+let g:mapleader = ","
+
+"Fast saving
+nmap <silent> <leader>ww :w<cr>
+nmap <silent> <leader>wf :w!<cr>
+
+"Fast remove highlight search
+nmap <silent> <leader><cr> :noh<cr>
+
+"Fast redraw
+nmap <silent> <leader>rr :redraw!<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 字体和颜色
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set guifont=YaHei_Consolas_Hybrid:h10
+
+" Avoid clearing hilight definition in plugins
+if !exists("g:vimrc_loaded")
+    syntax enable
+    if has("gui_running")
+        set guioptions-=T
+        set guioptions-=m
+        "set guioptions-=L
+        "set guioptions-=r
+        colorscheme darkblue_my
+    else
+        colorscheme desert
+    endif
+endif " exists(...)
+
+"Some nice mapping to switch syntax (如果代码混入其它语言中)
+map <leader>1 :set syntax=c<cr>
+map <leader>2 :set syntax=xhtml<cr>
+map <leader>3 :set syntax=python<cr>
+map <leader>4 :set ft=javascript<cr>
+map <leader>5 :set ft=aspvbs<cr>
+map <leader>6 :set ft=php<cr>
+map <leader>$ :syntax sync fromstart<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Fileformats
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"Favorite filetypes
+set ffs=unix,dos
+
+nmap <leader>fd :set ff=dos<cr>
+nmap <leader>fu :set ff=unix<cr>
+nmap <leader>fe :set fileencoding
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" VIM userinterface
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" window-size when GUI running
+if has("gui_running")
+    set lines=60
+    set columns=155
+endif
+
+"Turn on WiLd menu
+set wildmenu
+
+"Always show current position
+set ruler
+
+"The commandbar is 2 high
+set cmdheight=2
+
+"Show line number
+set nu
+
+"lazyredraw, when running macros.. 
+set lz
+
+"Set backspace
+set backspace=eol,start,indent
+
+"Bbackspace and cursor keys wrap to
+set whichwrap+=<,>
+
+"when searching
+"set ignorecase
+
+"Include search
+set incsearch
+
+"Highlight search things
+set hlsearch
+
+"Set magic on
+set magic
+
+"No sound on errors.
+set noerrorbells
+set novisualbell
+set t_vb=
+
+"Always show the statusline
+set laststatus=2
+
+"Format the statusline
+set statusline=%<%f%m\ %h%r%=%-14.(%l/%L,\ %c%V%)\ %P
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Moving around and tabs
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"Smart way to move windows
+nmap <C-j> <C-W>j
+nmap <C-k> <C-W>k
+nmap <C-h> <C-W>h
+nmap <C-l> <C-W>l
+
+"Switch to current dir
+map <silent> <leader>cd :cd %:p:h<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Command-line config
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Bash like
+cnoremap <C-A>    <Home>
+cnoremap <C-E>    <End>
+cnoremap <C-K>    <C-U>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Files and backups
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Turn backup off
+set nobackup
+set nowb
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Folding
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Enable folding, I find it very useful
+set foldenable
+set fdl=99
+
+autocmd FileType python setl foldmethod=indent
+autocmd FileType c,cpp setl foldmethod=syntax
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Text options
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set expandtab
+set shiftwidth=4
+set softtabstop=4
+
+map <leader>t2 :set shiftwidth=2<cr>
+map <leader>t4 :set shiftwidth=4<cr>
+au FileType txt setl lbr
+au FileType txt setl tw=78
+
+set smarttab
+
+"Auto indent
+set ai
+
+"Smart indet
+set si
+
+"C-style indeting
+set cindent
+
+"Wrap lines
+set wrap
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Complete
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" options
+set completeopt=menu
+"set complete-=u
+"set complete-=i
+
+if has("autocmd") && exists("+omnifunc")
+    autocmd Filetype *
+        \if &omnifunc == "" |
+        \  setlocal omnifunc=syntaxcomplete#Complete |
+        \endif
+endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Plugin configuration
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Tagbar (类似 taglist)
+autocmd FileType c,cpp nmap <F8> :TagbarToggle<CR>
+autocmd FileType python,javascript nmap <F8> :TagbarToggle<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Filetype generic
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Vim files
+autocmd FileType vim set nofen
+autocmd FileType vim map <buffer> <leader><space> :w!<cr>:source %<cr>
+
+" C/C++
+autocmd FileType c,cpp map <buffer> <leader><space> :make<cr>
+
+" Python runing...
+autocmd FileType python map <buffer> <F5> :!python %<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" MISC
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"Fast Ex command
+nnoremap ; :
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Mark as loaded
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:vimrc_loaded = 1
+
+
+" for windows
+source $VIMRUNTIME/mswin.vim
