@@ -11,5 +11,11 @@
     "workbench.colorTheme": "Monokai-Hzh",
     "workbench.statusBar.visible": true,
     "editor.fontSize": 15,
-    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?，。：；、‘’“”《》（）！？"
+    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?，。：；、‘’“”《》（）！？",
+    "workbench.colorCustomizations": {
+        "scrollbarSlider.activeBackground": "#53585a"
+    },
+    "go.formatTool": "goimports",
+    "editor.selectionHighlight": false,
+    "git.enabled": false
 }
