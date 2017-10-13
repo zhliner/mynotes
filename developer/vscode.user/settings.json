@@ -17,5 +17,12 @@
     },
     "go.formatTool": "goimports",
     "git.enabled": false,
-    "editor.multiCursorModifier": "ctrlCmd"
+    "editor.multiCursorModifier": "ctrlCmd",
+    "go.enableCodeLens": {
+        "references": false,
+        "runtest": false
+    },
+    "editor.tokenColorCustomizations": {
+        "keywords": "#f32c78"
+    }
 }

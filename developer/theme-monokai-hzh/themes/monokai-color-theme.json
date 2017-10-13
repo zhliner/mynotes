@@ -173,7 +173,7 @@
 			"name": "Keyword",
 			"scope": "keyword",
 			"settings": {
-				"foreground": "#F92672"
+				"foreground": "#f32c78"
 			}
 		},
 		{
@@ -181,7 +181,7 @@
 			"scope": "storage",
 			"settings": {
 				"fontStyle": "",
-				"foreground": "#F92672"
+				"foreground": "#f32c78"
 			}
 		},
 		{
@@ -189,7 +189,7 @@
 			"scope": "storage.type",
 			"settings": {
 				"fontStyle": "",
-				"foreground": "#8C99EE"
+				"foreground": "#66D9EF"
 			}
 		},
 		{
