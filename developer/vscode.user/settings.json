@@ -13,9 +13,9 @@
     "editor.fontSize": 15,
     "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?，。：；、‘’“”《》（）！？",
     "workbench.colorCustomizations": {
-        "scrollbarSlider.activeBackground": "#53585a"
+        "scrollbarSlider.hoverBackground": "#3f4548"
     },
     "go.formatTool": "goimports",
-    "editor.selectionHighlight": false,
-    "git.enabled": false
+    "git.enabled": false,
+    "editor.multiCursorModifier": "ctrlCmd"
 }
