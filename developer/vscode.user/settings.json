@@ -8,7 +8,6 @@
     "editor.minimap.enabled": true,
     "workbench.sideBar.location": "left",
     "window.zoomLevel": -0.7,
-    "workbench.colorTheme": "Monokai-Hzh",
     "workbench.statusBar.visible": true,
     "editor.fontSize": 15,
     "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?，。：；、‘’“”《》（）！？",
@@ -24,5 +23,7 @@
     },
     "editor.tokenColorCustomizations": {
         "keywords": "#f32c78"
-    }
+    },
+    "workbench.colorTheme": "Monokai-Hzh",
+    "auto-comment-blocks.singleLineBlockOnEnter": true
 }
