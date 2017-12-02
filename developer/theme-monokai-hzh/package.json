@@ -1,7 +1,7 @@
 {
 	"name": "theme-monokai-hzh",
 	"version": "0.1.0",
-	"publisher": "vscode",
+	"publisher": "Monokai-Hzh 主题修改版。深灰蓝色边框。",
 	"engines": { "vscode": "*" },
 	"contributes": {
 		"themes": [

@@ -4,11 +4,9 @@
     // "editor.wordWrap": "on",
     "editor.minimap.renderCharacters": false,
     "files.trimTrailingWhitespace": true,
-    "workbench.activityBar.visible": true,
     "editor.minimap.enabled": true,
     "workbench.sideBar.location": "left",
     "window.zoomLevel": -0.7,
-    "workbench.statusBar.visible": true,
     "editor.fontSize": 15,
     "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?，。：；、‘’“”《》（）！？",
     "workbench.colorCustomizations": {
@@ -25,5 +23,10 @@
         "keywords": "#f32c78"
     },
     "workbench.colorTheme": "Monokai-Hzh",
-    "auto-comment-blocks.singleLineBlockOnEnter": true
+    "auto-comment-blocks.singleLineBlockOnEnter": true,
+    "sublimeTextKeymap.promptV3Features": true,
+    "editor.snippetSuggestions": "top",
+    "editor.formatOnPaste": true,
+    "workbench.activityBar.visible": true,
+    "window.menuBarVisibility": "toggle"
 }

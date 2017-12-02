@@ -1,10 +1,4 @@
-// Place your key bindings in this file to overwrite the defaults
 [
-    {
-        "key": "ctrl+space",
-        "command": "-editor.action.triggerSuggest",
-        "when": "editorHasCompletionItemProvider && editorTextFocus && !editorReadonly"
-    },
     {
         "key": "alt+q",
         "command": "workbench.action.togglePanel"
@@ -26,7 +20,13 @@
         "command": "-workbench.action.toggleSidebarVisibility"
     },
     {
-        "key": "ctrl+b",
-        "command": "-workbench.action.toggleSidebarVisibility"
+        "key": "alt+z",
+        "command": "toggleSuggestionDetails",
+        "when": "editorTextFocus && suggestWidgetVisible"
+    },
+    {
+        "key": "ctrl+space",
+        "command": "-toggleSuggestionDetails",
+        "when": "editorTextFocus && suggestWidgetVisible"
     }
 ]
