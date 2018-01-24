@@ -1,13 +1,13 @@
 {
-    "editor.fontFamily": "'YaHei Consolas Hybrid', 'Courier New', monospace",
+    "editor.fontFamily": "'YaHei Consolas Hybrid'",
     "team.showWelcomeMessage": false,
     // "editor.wordWrap": "on",
     "editor.minimap.renderCharacters": false,
     "files.trimTrailingWhitespace": true,
     "editor.minimap.enabled": true,
     "workbench.sideBar.location": "left",
-    "window.zoomLevel": -0.7,
-    "editor.fontSize": 15,
+    "window.zoomLevel": -1,
+    "editor.fontSize": 16,
     "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?，。：；、‘’“”《》（）！？",
     "workbench.colorCustomizations": {
         "scrollbarSlider.hoverBackground": "#3f4548"
@@ -28,5 +28,6 @@
     "editor.snippetSuggestions": "top",
     "editor.formatOnPaste": true,
     "workbench.activityBar.visible": true,
-    "window.menuBarVisibility": "toggle"
+    "window.menuBarVisibility": "default",
+    "editor.lineHeight": 21
 }
