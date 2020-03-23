@@ -689,14 +689,6 @@ sort.Reverse内部实现
 
 
 
-7.9 示例：表达式求值
-====================
-微型表达式解析器，可借鉴用于“语法分析”场合。
-代码：gopl.io/ch7/eval
-
-
-
-
 7.12 通过类型断言查询接口
 =========================
 对于io.Writer变量w，它的动态类型可能有一个更高效写入字符串的WriteString方法。
@@ -1297,3 +1289,11 @@ go tool pprof ...
 自定义输出方法：
 func (t T) String() string      // 适用 fmt.Println(x) fmt.Println(&x)
 func (t *T) String() string     // 适用 fmt.Println(&x)
+
+
+
+
+7.9 示例：表达式求值
+====================
+微型表达式解析器，可用于设计脚本表达式执行器。
+代码：gopl.io/ch7/eval

@@ -1,33 +1,51 @@
 {
     "editor.fontFamily": "'YaHei Consolas Hybrid'",
-    "team.showWelcomeMessage": false,
-    // "editor.wordWrap": "on",
     "editor.minimap.renderCharacters": false,
     "files.trimTrailingWhitespace": true,
     "editor.minimap.enabled": true,
     "workbench.sideBar.location": "left",
-    "window.zoomLevel": -1,
+    "window.zoomLevel": -0.9,
     "editor.fontSize": 16,
     "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?，。：；、‘’“”《》（）！？",
     "workbench.colorCustomizations": {
         "scrollbarSlider.hoverBackground": "#3f4548"
     },
     "go.formatTool": "goimports",
-    "git.enabled": false,
     "editor.multiCursorModifier": "ctrlCmd",
     "go.enableCodeLens": {
         "references": false,
         "runtest": false
     },
     "editor.tokenColorCustomizations": {
-        "keywords": "#f32c78"
+        "keywords": "#f32c78",
+        "textMateRules": [
+            {
+                "scope": "comment.block.documentation entity.name.type, comment.block.documentation variable, comment.block.documentation storage.type",
+                "settings": {
+                    "foreground": "#78848f"
+                }
+            }
+        ]
     },
     "workbench.colorTheme": "Monokai-Hzh",
-    "auto-comment-blocks.singleLineBlockOnEnter": true,
-    "sublimeTextKeymap.promptV3Features": true,
     "editor.snippetSuggestions": "top",
     "editor.formatOnPaste": true,
     "workbench.activityBar.visible": true,
     "window.menuBarVisibility": "default",
-    "editor.lineHeight": 21
+    "editor.lineHeight": 21,
+    "markdownlint.config": {
+        "MD041": false,
+        "MD002": false,
+        "MD007": false,
+        "MD012": false,
+        "MD032": false,
+        "MD040": false,
+        "MD022": false,
+        "MD031": false,
+        "MD024": false,
+        "MD033": false,
+        "MD036": false,
+        "MD030": false,
+        "MD046": false
+    }
 }
