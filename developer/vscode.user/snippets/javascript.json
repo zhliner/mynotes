@@ -16,7 +16,7 @@
 		"prefix": "cls",
 		"body": [
 			"class ${1:className} {",
-			"    constructor(${2: ${3:param} }) {",
+			"    constructor(${2:param}) {",
 			"        $0",
 			"    }",
 			"}"
@@ -27,7 +27,7 @@
 	"class method": {
 		"prefix": "metc",
 		"body": [
-			"${1:methodName}(${2: ${3:param} }) {",
+			"${1:methodName}(${2:param}) {",
 			"    $0",
 			"}"
 		],
@@ -37,7 +37,7 @@
 	"object method": {
 		"prefix": "meto",
 		"body": [
-			"${1:methodName}(${2: ${3:param} }) {",
+			"${1:methodName}(${2:param}) {",
 			"    $0",
 			"},"
 		],
