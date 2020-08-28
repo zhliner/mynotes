@@ -25,7 +25,7 @@
 	},
 
 	"class method": {
-		"prefix": "metc",
+		"prefix": "mec",
 		"body": [
 			"${1:methodName}(${2:param}) {",
 			"    $0",
@@ -34,13 +34,24 @@
 		"description": "method of class"
 	},
 
-	"object method": {
-		"prefix": "meto",
+	"anonymous function in object": {
+		"prefix": "afo",
 		"body": [
-			"${1:methodName}(${2:param}) {",
+			"function(${1:param}) {",
 			"    $0",
 			"},"
 		],
-		"description": "method of object"
+		"description": "a function in object"
+	},
+
+	"anonymous function": {
+		"prefix": "afn",
+		"body": [
+			"function(${1:param}) {",
+			"    $0",
+			"}"
+		],
+		"description": "a function in somewhere"
 	}
+
 }
