@@ -12,6 +12,7 @@
 	// 	],
 	// 	"description": "Log output to console"
 	// }
+
 	"class define": {
 		"prefix": "cls",
 		"body": [
@@ -34,6 +35,16 @@
 		"description": "method of class"
 	},
 
+	"object method": {
+		"prefix": "meo",
+		"body": [
+			"${1:methodName}(${2:param}) {",
+			"    $0",
+			"},"
+		],
+		"description": "method of object"
+	},
+
 	"anonymous function in object": {
 		"prefix": "afo",
 		"body": [
@@ -52,6 +63,15 @@
 			"}"
 		],
 		"description": "a function in somewhere"
-	}
+	},
 
+	"for-of loop": {
+		"prefix": "foo",
+		"body": [
+			"for ( const ${2:its} of ${1:list} ) {",
+			"    $0",
+			"}"
+		],
+		"description": "for-of loop statement"
+	}
 }
