@@ -1,32 +1,28 @@
 [
     {
-        "key": "alt+q",
-        "command": "workbench.action.togglePanel"
-    },
-    {
         "key": "ctrl+j",
         "command": "-workbench.action.togglePanel"
     },
     {
-        "key": "f2",
-        "command": "workbench.action.toggleActivityBarVisibility"
+        "key": "ctrl+j",
+        "command": "editor.action.joinLines"
     },
     {
-        "key": "ctrl+q",
-        "command": "workbench.action.toggleSidebarVisibility"
+        "key": "ctrl+k ctrl+l",
+        "command": "-editor.toggleFold",
+        "when": "editorTextFocus && foldingEnabled"
     },
     {
-        "key": "ctrl+k ctrl+b",
-        "command": "-workbench.action.toggleSidebarVisibility"
+        "key": "ctrl+k ctrl+l",
+        "command": "editor.action.transformToLowercase"
     },
     {
-        "key": "alt+z",
-        "command": "toggleSuggestionDetails",
-        "when": "editorTextFocus && suggestWidgetVisible"
+        "key": "ctrl+k ctrl+u",
+        "command": "-editor.action.removeCommentLine",
+        "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "key": "ctrl+space",
-        "command": "-toggleSuggestionDetails",
-        "when": "editorTextFocus && suggestWidgetVisible"
+        "key": "ctrl+k ctrl+u",
+        "command": "editor.action.transformToUppercase"
     }
 ]
